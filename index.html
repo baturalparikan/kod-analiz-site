@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Kod Analiz Aracı</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 20px;
+    }
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    textarea {
+      width: 100%;
+      height: 200px;
+      padding: 10px;
+      font-family: monospace;
+      font-size: 14px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      resize: vertical;
+    }
+    select, button {
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+    }
+    button {
+      background: #007BFF;
+      color: white;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      background: #eee;
+      border-radius: 5px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Kod Analiz Aracı</h2>
+    <textarea id="codeInput" placeholder="Kodunuzu buraya yapıştırın..."></textarea><br>
+
+    <label for="language">Dil Seç:</label>
+    <select id="language">
+      <option value="tr">Türkçe</option>
+      <option value="en">English</option>
+    </select><br>
+
+    <button onclick="analyzeCode()">Analiz Et</button>
+
+    <div class="result" id="result">Sonuç burada görünecek...</div>
+  </div>
+
+  <script>
+   const API_URL = "https://kod-analiz-api.onrender.com/analyze";
+
+
+    async function analyzeCode() {
+      const code = document.getElementById("codeInput").value;
+      const lang = document.getElementById("language").value;
+      const resultDiv = document.getElementById("result");
+
+      resultDiv.textContent = "Analiz ediliyor...";
+
+      try {
+        const response = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code: code, lang: lang })
+        });
+
+        const data = await response.json();
+        resultDiv.textContent = data.result || "Herhangi bir sonuç dönmedi.";
+      } catch (error) {
+        resultDiv.textContent = "Hata: API'ye ulaşılamıyor.";
+      }
+    }
+  </script>
+</body>
+</html>
