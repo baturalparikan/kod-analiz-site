@@ -62,9 +62,6 @@
       border: 1px solid #009900;
       color: #003300;
     }
-    .cm-error-line {
-      background-color: #ffcccc !important;
-    }
   </style>
 </head>
 <body>
@@ -78,6 +75,7 @@
       <option value="en">English</option>
     </select>
     <button onclick="analyzeCode()">Analiz Et</button>
+    <button onclick="clearCode()">Temizle</button>
     <div id="result">Sonuç burada görünecek...</div>
   </div>
 
@@ -91,37 +89,6 @@
     });
 
     const API_URL = "https://kod-analiz-api.onrender.com/analyze";
-    let errorMarkers = [];
-
-    function clearErrorHighlights() {
-      errorMarkers.forEach(marker => marker.clear());
-      errorMarkers = [];
-    }
-
-    function highlightLine(lineNumber) {
-      const lineIndex = parseInt(lineNumber, 10) - 1;
-      if (!isNaN(lineIndex) && lineIndex >= 0) {
-        const marker = editor.markText(
-          { line: lineIndex, ch: 0 },
-          { line: lineIndex, ch: editor.getLine(lineIndex).length },
-          { className: "cm-error-line" }
-        );
-        errorMarkers.push(marker);
-      }
-    }
-
-    function renderError(error, index) {
-      return `
-        <div style="margin-bottom:10px;">
-          <b>Hata ${index + 1}:</b><br>
-          <b>Hata Türü:</b> ${error.error_type || "Belirtilmedi"}<br>
-          <b>Açıklama:</b> ${error.explanation || "Yok"}<br>
-          <b>Basit Açıklama:</b> ${error.simple_explanation || "Yok"}<br>
-          <b>Satır:</b> ${error.line || "?"}<br>
-          <b>Orijinal Mesaj:</b> <code>${error.original_message || "Yok"}</code>
-        </div>
-      `;
-    }
 
     async function analyzeCode() {
       const code = editor.getValue();
@@ -130,8 +97,6 @@
 
       resultDiv.textContent = "Analiz ediliyor...";
       resultDiv.className = "";
-
-      clearErrorHighlights();
 
       try {
         const response = await fetch(API_URL, {
@@ -142,24 +107,27 @@
 
         const data = await response.json();
 
-        if (Array.isArray(data)) {
-          // Birden fazla hata varsa
+        if (Array.isArray(data) && data.length > 0 && data[0].error_type) {
+          // Çoklu hata varsa
           resultDiv.className = "error-box";
-          resultDiv.innerHTML = data.map((err, i) => renderError(err, i)).join("<hr>");
-
-          data.forEach(err => {
-            if (err.line) highlightLine(err.line);
+          let html = "";
+          data.forEach((err, i) => {
+            html += `<b>Hata ${i + 1}:</b><br>
+                     Hata Türü: ${err.error_type}<br>
+                     Açıklama: ${err.explanation}<br>
+                     Satır: ${err.line}<br>
+                     Orijinal Mesaj: <code>${err.original_message}</code><br><br>`;
           });
-
-        } else if (data.error_type || data.explanation || data.line || data.original_message || data.simple_explanation) {
-          // Tek hata varsa
+          resultDiv.innerHTML = html;
+        } else if (data.error_type) {
           resultDiv.className = "error-box";
-          resultDiv.innerHTML = renderError(data, 0);
-
-          if (data.line) highlightLine(data.line);
-
+          resultDiv.innerHTML = `
+            Hata Türü: ${data.error_type}<br>
+            Açıklama: ${data.explanation}<br>
+            Satır: ${data.line}<br>
+            Orijinal Mesaj: <code>${data.original_message}</code>
+          `;
         } else {
-          // Hiç hata yoksa
           resultDiv.className = "success-box";
           resultDiv.innerHTML = `<b>Kodda hata bulunamadı.</b>`;
         }
@@ -168,6 +136,13 @@
         resultDiv.className = "error-box";
         resultDiv.textContent = "Hata: API'ye ulaşılamıyor.";
       }
+    }
+
+    function clearCode() {
+      editor.setValue("");
+      const resultDiv = document.getElementById("result");
+      resultDiv.textContent = "Sonuç burada görünecek...";
+      resultDiv.className = "";
     }
   </script>
 </body>
