@@ -62,6 +62,9 @@
       border: 1px solid #009900;
       color: #003300;
     }
+    .line-error-highlight {
+      background-color: #ffcccc;
+    }
   </style>
 </head>
 <body>
@@ -103,6 +106,9 @@
       resultDiv.textContent = "Analiz ediliyor...";
       resultDiv.className = "";
 
+      // Önceki hata işaretlerini temizle
+      editor.getAllMarks().forEach(mark => mark.clear());
+
       try {
         const response = await fetch(API_URL, {
           method: "POST",
@@ -121,6 +127,16 @@
                      Açıklama: ${err.explanation}<br>
                      Satır: ${err.line}<br>
                      Orijinal Mesaj: <code>${err.original_message}</code><br><br>`;
+
+            // Hatalı satırı işaretle
+            const lineNumber = parseInt(err.line) - 1;
+            if (!isNaN(lineNumber)) {
+              editor.markText(
+                {line: lineNumber, ch: 0},
+                {line: lineNumber, ch: editor.getLine(lineNumber).length},
+                {className: "line-error-highlight"}
+              );
+            }
           });
           resultDiv.innerHTML = html;
         } else if (data.error_type) {
@@ -131,6 +147,15 @@
             Satır: ${data.line}<br>
             Orijinal Mesaj: <code>${data.original_message}</code>
           `;
+
+          const lineNumber = parseInt(data.line) - 1;
+          if (!isNaN(lineNumber)) {
+            editor.markText(
+              {line: lineNumber, ch: 0},
+              {line: lineNumber, ch: editor.getLine(lineNumber).length},
+              {className: "line-error-highlight"}
+            );
+          }
         } else {
           resultDiv.className = "success-box";
           resultDiv.innerHTML = `<b>Kodda hata bulunamadı.</b>`;
@@ -147,10 +172,9 @@
       const resultDiv = document.getElementById("result");
       resultDiv.textContent = "Sonuç burada görünecek...";
       resultDiv.className = "";
+      editor.getAllMarks().forEach(mark => mark.clear());
     }
   </script>
 </body>
 </html>
-
-
 
