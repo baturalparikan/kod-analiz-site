@@ -98,6 +98,31 @@
       errorMarkers = [];
     }
 
+    function highlightLine(lineNumber) {
+      const lineIndex = parseInt(lineNumber, 10) - 1;
+      if (!isNaN(lineIndex) && lineIndex >= 0) {
+        const marker = editor.markText(
+          { line: lineIndex, ch: 0 },
+          { line: lineIndex, ch: editor.getLine(lineIndex).length },
+          { className: "cm-error-line" }
+        );
+        errorMarkers.push(marker);
+      }
+    }
+
+    function renderError(error, index) {
+      return `
+        <div style="margin-bottom:10px;">
+          <b>Hata ${index + 1}:</b><br>
+          <b>Hata Türü:</b> ${error.error_type || "Belirtilmedi"}<br>
+          <b>Açıklama:</b> ${error.explanation || "Yok"}<br>
+          <b>Basit Açıklama:</b> ${error.simple_explanation || "Yok"}<br>
+          <b>Satır:</b> ${error.line || "?"}<br>
+          <b>Orijinal Mesaj:</b> <code>${error.original_message || "Yok"}</code>
+        </div>
+      `;
+    }
+
     async function analyzeCode() {
       const code = editor.getValue();
       const lang = document.getElementById("lang").value;
@@ -117,30 +142,22 @@
 
         const data = await response.json();
 
-        // Eğer API hata bilgisi döndürüyorsa
-        if (data.error_type || data.explanation || data.line || data.original_message || data.simple_explanation) {
+        if (Array.isArray(data)) {
+          // Birden fazla hata varsa
           resultDiv.className = "error-box";
+          resultDiv.innerHTML = data.map((err, i) => renderError(err, i)).join("<hr>");
 
-          resultDiv.innerHTML = `
-            <b>Hata Türü:</b> ${data.error_type || "Belirtilmedi"}<br>
-            <b>Açıklama:</b> ${data.explanation || "Yok"}<br>
-            <b>Basit Açıklama:</b> ${data.simple_explanation || "Yok"}<br>
-            <b>Satır:</b> ${data.line || "?"}<br>
-            <b>Orijinal Mesaj:</b> <code>${data.original_message || "Yok"}</code>
-          `;
+          data.forEach(err => {
+            if (err.line) highlightLine(err.line);
+          });
 
-          // Hata satırını kırmızıya boyama
-          if (data.line) {
-            const lineIndex = parseInt(data.line, 10) - 1;
-            if (!isNaN(lineIndex) && lineIndex >= 0) {
-              const marker = editor.markText(
-                { line: lineIndex, ch: 0 },
-                { line: lineIndex, ch: editor.getLine(lineIndex).length },
-                { className: "cm-error-line" }
-              );
-              errorMarkers.push(marker);
-            }
-          }
+        } else if (data.error_type || data.explanation || data.line || data.original_message || data.simple_explanation) {
+          // Tek hata varsa
+          resultDiv.className = "error-box";
+          resultDiv.innerHTML = renderError(data, 0);
+
+          if (data.line) highlightLine(data.line);
+
         } else {
           // Hiç hata yoksa
           resultDiv.className = "success-box";
