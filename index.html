@@ -55,25 +55,16 @@
     <h2>Kod Analiz Aracı</h2>
     <textarea id="codeInput" placeholder="Kodunuzu buraya yapıştırın..."></textarea><br>
 
-    <label for="language">Dil Seç:</label>
-    <select id="language">
-      <option value="tr">Türkçe</option>
-      <option value="en">English</option>
-    </select><br>
-
     <button onclick="analyzeCode()">Analiz Et</button>
 
     <div class="result" id="result">Sonuç burada görünecek...</div>
   </div>
 
   <script>
-   const API_URL = "https://kod-analiz-api.onrender.com/analyze";
-
-
+   const API_URL = "https://kod-analiz-api.onrender.com/analyze"; // kendi API adresin
 
     async function analyzeCode() {
       const code = document.getElementById("codeInput").value;
-      const lang = document.getElementById("language").value;
       const resultDiv = document.getElementById("result");
 
       resultDiv.textContent = "Analiz ediliyor...";
@@ -82,11 +73,20 @@
         const response = await fetch(API_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ code: code, lang: lang })
+          body: JSON.stringify({ code: code })
         });
 
         const data = await response.json();
-        resultDiv.textContent = data.result || "Herhangi bir sonuç dönmedi.";
+
+        if (data.result) {
+          resultDiv.textContent = data.result;
+        } else {
+          resultDiv.textContent =
+            `Hata türü: ${data.error_type}\n` +
+            `Satır: ${data.line}\n` +
+            `Açıklama: ${data.explanation}\n` +
+            `Orijinal Mesaj: ${data.original_message}`;
+        }
       } catch (error) {
         resultDiv.textContent = "Hata: API'ye ulaşılamıyor.";
       }
@@ -94,3 +94,4 @@
   </script>
 </body>
 </html>
+
