@@ -73,6 +73,11 @@
     <select id="lang">
       <option value="tr">Türkçe</option>
       <option value="en">English</option>
+      <option value="de">Almanca</option>
+      <option value="ru">Rusça</option>
+      <option value="ar">Arapça</option>
+      <option value="zh">Çince</option>
+      <option value="es">İspanyolca</option>
     </select>
     <button onclick="analyzeCode()">Analiz Et</button>
     <button onclick="clearCode()">Temizle</button>
@@ -108,7 +113,6 @@
         const data = await response.json();
 
         if (Array.isArray(data) && data.length > 0 && data[0].error_type) {
-          // Çoklu hata varsa
           resultDiv.className = "error-box";
           let html = "";
           data.forEach((err, i) => {
@@ -147,5 +151,6 @@
   </script>
 </body>
 </html>
+
 
 
