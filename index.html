@@ -62,6 +62,9 @@
       border: 1px solid #009900;
       color: #003300;
     }
+    .cm-error-line {
+      background-color: #ffcccc !important;
+    }
   </style>
 </head>
 <body>
@@ -88,6 +91,12 @@
     });
 
     const API_URL = "https://kod-analiz-api.onrender.com/analyze";
+    let errorMarkers = [];
+
+    function clearErrorHighlights() {
+      errorMarkers.forEach(marker => marker.clear());
+      errorMarkers = [];
+    }
 
     async function analyzeCode() {
       const code = editor.getValue();
@@ -95,6 +104,9 @@
       const resultDiv = document.getElementById("result");
 
       resultDiv.textContent = "Analiz ediliyor...";
+      resultDiv.className = "";
+
+      clearErrorHighlights();
 
       try {
         const response = await fetch(API_URL, {
@@ -105,15 +117,32 @@
 
         const data = await response.json();
 
-        if (data.error_type) {
+        // Eğer API hata bilgisi döndürüyorsa
+        if (data.error_type || data.explanation || data.line || data.original_message || data.simple_explanation) {
           resultDiv.className = "error-box";
+
           resultDiv.innerHTML = `
-            <b>Hata Türü:</b> ${data.error_type}<br>
-            <b>Açıklama:</b> ${data.explanation}<br>
-            <b>Satır:</b> ${data.line}<br>
-            <b>Orijinal Mesaj:</b> <code>${data.original_message}</code>
+            <b>Hata Türü:</b> ${data.error_type || "Belirtilmedi"}<br>
+            <b>Açıklama:</b> ${data.explanation || "Yok"}<br>
+            <b>Basit Açıklama:</b> ${data.simple_explanation || "Yok"}<br>
+            <b>Satır:</b> ${data.line || "?"}<br>
+            <b>Orijinal Mesaj:</b> <code>${data.original_message || "Yok"}</code>
           `;
+
+          // Hata satırını kırmızıya boyama
+          if (data.line) {
+            const lineIndex = parseInt(data.line, 10) - 1;
+            if (!isNaN(lineIndex) && lineIndex >= 0) {
+              const marker = editor.markText(
+                { line: lineIndex, ch: 0 },
+                { line: lineIndex, ch: editor.getLine(lineIndex).length },
+                { className: "cm-error-line" }
+              );
+              errorMarkers.push(marker);
+            }
+          }
         } else {
+          // Hiç hata yoksa
           resultDiv.className = "success-box";
           resultDiv.innerHTML = `<b>Kodda hata bulunamadı.</b>`;
         }
