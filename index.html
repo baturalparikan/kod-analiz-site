@@ -5,38 +5,63 @@
   <title>Kod Analiz Aracı</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: monospace;
       background: #f4f4f4;
       padding: 20px;
     }
     .container {
-      max-width: 700px;
+      max-width: 800px;
       margin: auto;
       background: #fff;
       padding: 20px;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
+    h2 {
+      text-align: center;
+    }
+    .editor {
+      display: flex;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+    .line-numbers {
+      background: #eee;
+      color: #666;
+      padding: 10px 5px;
+      text-align: right;
+      user-select: none;
+      min-width: 30px;
+    }
+    .line-numbers span {
+      display: block;
+      height: 18px;
+      padding: 0 3px;
+    }
+    .line-numbers .error-line {
+      background: #ffcccc;
+      color: #d00;
+      font-weight: bold;
+    }
     textarea {
-      width: 100%;
-      height: 200px;
+      flex: 1;
       padding: 10px;
       font-family: monospace;
       font-size: 14px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      resize: vertical;
-    }
-    select, button {
-      padding: 10px;
-      margin-top: 10px;
-      border-radius: 5px;
       border: none;
-      cursor: pointer;
+      outline: none;
+      resize: none;
+      line-height: 18px;
     }
     button {
       background: #007BFF;
       color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
     }
     button:hover {
       background: #0056b3;
@@ -53,40 +78,64 @@
 <body>
   <div class="container">
     <h2>Kod Analiz Aracı</h2>
-    <textarea id="codeInput" placeholder="Kodunuzu buraya yapıştırın..."></textarea><br>
-
+    <div class="editor">
+      <div class="line-numbers" id="lineNumbers"></div>
+      <textarea id="codeInput" placeholder="Kodunuzu buraya yazın..."></textarea>
+    </div>
     <button onclick="analyzeCode()">Analiz Et</button>
-
     <div class="result" id="result">Sonuç burada görünecek...</div>
   </div>
 
   <script>
-   const API_URL = "https://kod-analiz-api.onrender.com/analyze"; // kendi API adresin
+    const API_URL = "https://kod-analiz-api.onrender.com/analyze";
+
+    const textarea = document.getElementById("codeInput");
+    const lineNumbers = document.getElementById("lineNumbers");
+
+    function updateLineNumbers(errorLine = null) {
+      const lines = textarea.value.split("\n").length;
+      lineNumbers.innerHTML = "";
+      for (let i = 1; i <= lines; i++) {
+        const span = document.createElement("span");
+        span.textContent = i;
+        if (errorLine === i) {
+          span.classList.add("error-line");
+        }
+        lineNumbers.appendChild(span);
+      }
+    }
+
+    textarea.addEventListener("input", () => updateLineNumbers());
+    textarea.addEventListener("scroll", () => {
+      lineNumbers.scrollTop = textarea.scrollTop;
+    });
+
+    updateLineNumbers();
 
     async function analyzeCode() {
-      const code = document.getElementById("codeInput").value;
+      const code = textarea.value;
       const resultDiv = document.getElementById("result");
 
       resultDiv.textContent = "Analiz ediliyor...";
+      updateLineNumbers(); // önce temizle
 
       try {
         const response = await fetch(API_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ code: code })
+          body: JSON.stringify({ code })
         });
 
         const data = await response.json();
 
-        if (data.result) {
-          resultDiv.textContent = data.result;
+        // Backend "line" alanı dönerse orayı işaretle
+        if (data.line) {
+          updateLineNumbers(data.line);
         } else {
-          resultDiv.textContent =
-            `Hata türü: ${data.error_type}\n` +
-            `Satır: ${data.line}\n` +
-            `Açıklama: ${data.explanation}\n` +
-            `Orijinal Mesaj: ${data.original_message}`;
+          updateLineNumbers();
         }
+
+        resultDiv.textContent = data.result || JSON.stringify(data, null, 2);
       } catch (error) {
         resultDiv.textContent = "Hata: API'ye ulaşılamıyor.";
       }
@@ -94,4 +143,5 @@
   </script>
 </body>
 </html>
+
 
