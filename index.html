@@ -147,19 +147,22 @@ const clearBtnEl = document.getElementById("clearBtn");
 const resultDivEl = document.getElementById("result");
 
 // Dili uygula (UI metinlerini günceller)
+// Dili uygula (UI metinlerini günceller)
 function applyLanguage(lang) {
-  const t = translations[lang] || translations["en"]; // yoksa ingilizceye döner
-  // sayfa elementlerini değiştir
+  const t = translations[lang] || translations["en"]; // yoksa İngilizceye döner
+
+  // Sayfa elementlerini değiştir
   if (titleEl) titleEl.textContent = t.title;
   if (labelEl) labelEl.textContent = t.labelLang;
   if (analyzeBtnEl) analyzeBtnEl.textContent = t.analyze;
   if (clearBtnEl) clearBtnEl.textContent = t.clear;
-  if (resultDivEl && resultDivEl.innerHTML.trim() === "" || resultDivEl.textContent.trim() === "") {
-    resultDivEl.textContent = t.resultPlaceholder;
-  } else {
-    // eğer sonuç kutusunda zaten bir çıktı varsa onu silme, sadece placeholder için işlem
+
+  if (resultDivEl && (resultDivEl.innerHTML.trim() === "" || resultDivEl.textContent.trim() === "")) {
+    resultDivEl.textContent = t.result_Placeholder;
   }
-  // sayfa dil (html lang) ayarı
+  // eğer sonuç kutusunda zaten bir çıktı varsa onu silme, sadece placeholder için işlem
+
+  // Sayfa dil (html lang) ayarı
   document.documentElement.lang = lang;
 }
 
