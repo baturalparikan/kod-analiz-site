@@ -73,7 +73,7 @@
 </head>
 <body>
   <div class="container">
-    <h2>Kod Analiz Aracı</h2>
+<h2 id="title">Kod Analiz Aracı</h2>
     <textarea id="editor"></textarea>
     <br>
     <label for="lang">Dil Seç:</label>
@@ -86,8 +86,9 @@
       <option value="zh">中国人</option>
       <option value="es">Español</option>
     </select>
-    <button onclick="analyzeCode()">Analiz Et</button>
-    <button onclick="clearCode()">Temizle</button>
+<button id="analyzeBtn" onclick="analyzeCode()">Analiz Et</button>
+<button id="clearBtn" onclick="clearCode()">Temizle</button>
+
     <div id="result">Sonuç burada görünecek...</div>
   </div>
 
@@ -99,77 +100,157 @@
       lineNumbers: true,
       theme: "default"
     });
+/* ---------- DİL (i18n) AYARLARI - BURAYA YAPIŞTIR ---------- */
+
+// Çeviriler (şu anda İngilizce ve Türkçe). İleride başka diller eklenecekse buraya ekleyebilirsin.
+const translations = {
+  en: {
+    title: "Code Analysis Tool",
+    labelLang: "Language:",
+    analyze: "Analyze",
+    clear: "Clear",
+    resultPlaceholder: "Result will appear here...",
+    analyzing: "Analyzing...",
+    apiError: "Error: Can't reach API.",
+    noError: "No errors found in code.",
+    errorHeader: "Errors found:",
+    errorLabel: "Error",
+    errorTypeLabel: "Error Type:",
+    explanationLabel: "Explanation:",
+    lineLabel: "Line:",
+    originalMsgLabel: "Original Message:"
+  },
+  tr: {
+    title: "Kod Analiz Aracı",
+    labelLang: "Dil Seç:",
+    analyze: "Analiz Et",
+    clear: "Temizle",
+    resultPlaceholder: "Sonuç burada görünecek...",
+    analyzing: "Analiz ediliyor...",
+    apiError: "Hata: API'ye ulaşılamıyor.",
+    noError: "Kodda hata bulunamadı.",
+    errorHeader: "Bulunan Hatalar:",
+    errorLabel: "Hata",
+    errorTypeLabel: "Hata Türü:",
+    explanationLabel: "Açıklama:",
+    lineLabel: "Satır:",
+    originalMsgLabel: "Orijinal Mesaj:"
+  }
+};
+
+// HTML eleman referansları
+const langSelect = document.getElementById("lang");
+const titleEl = document.getElementById("title");
+const labelEl = document.querySelector('label[for="lang"]');
+const analyzeBtnEl = document.getElementById("analyzeBtn");
+const clearBtnEl = document.getElementById("clearBtn");
+const resultDivEl = document.getElementById("result");
+
+// Dili uygula (UI metinlerini günceller)
+function applyLanguage(lang) {
+  const t = translations[lang] || translations["en"]; // yoksa ingilizceye döner
+  // sayfa elementlerini değiştir
+  if (titleEl) titleEl.textContent = t.title;
+  if (labelEl) labelEl.textContent = t.labelLang;
+  if (analyzeBtnEl) analyzeBtnEl.textContent = t.analyze;
+  if (clearBtnEl) clearBtnEl.textContent = t.clear;
+  if (resultDivEl && resultDivEl.innerHTML.trim() === "" || resultDivEl.textContent.trim() === "") {
+    resultDivEl.textContent = t.resultPlaceholder;
+  } else {
+    // eğer sonuç kutusunda zaten bir çıktı varsa onu silme, sadece placeholder için işlem
+  }
+  // sayfa dil (html lang) ayarı
+  document.documentElement.lang = lang;
+}
+
+// Seçim değiştiğinde çalışacak
+langSelect.addEventListener("change", (e) => {
+  applyLanguage(e.target.value);
+});
+
+// Sayfa ilk açıldığında varsayılan dili İngilizce yap
+// (bunu buraya koyduk; isteyen 'tr' yapabilir)
+const DEFAULT_LANG = "en";
+langSelect.value = DEFAULT_LANG; // seçicide de İngilizce seçili olsun
+applyLanguage(DEFAULT_LANG);
+
+/* ---------- i18n BLOKU SONU ---------- */
 
     const API_URL = "https://kod-analiz-api.onrender.com/analyze";
 
     async function analyzeCode() {
-      const code = editor.getValue();
-      const lang = document.getElementById("lang").value;
-      const resultDiv = document.getElementById("result");
+  const code = editor.getValue();
+  const lang = document.getElementById("lang").value || DEFAULT_LANG;
+  const t = translations[lang] || translations["en"];
+  const resultDiv = document.getElementById("result");
 
-      resultDiv.textContent = "Analiz ediliyor...";
-      resultDiv.className = "";
+  // Analiz başlatma mesajı (dile göre)
+  resultDiv.textContent = t.analyzing;
+  resultDiv.className = "";
 
-      // Önceki hata işaretlerini temizle
-      editor.getAllMarks().forEach(mark => mark.clear());
+  // Önceki hata işaretlerini temizle
+  editor.getAllMarks().forEach(mark => mark.clear());
 
-      try {
-        const response = await fetch(API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ code: code, lang: lang })
-        });
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: code, lang: lang })
+    });
 
-        const data = await response.json();
+    const data = await response.json();
 
-        if (Array.isArray(data) && data.length > 0 && data[0].error_type) {
-          resultDiv.className = "error-box";
-          let html = "";
-          data.forEach((err, i) => {
-            html += `<b>Hata ${i + 1}:</b><br>
-                     Hata Türü: ${err.error_type}<br>
-                     Açıklama: ${err.explanation}<br>
-                     Satır: ${err.line}<br>
-                     Orijinal Mesaj: <code>${err.original_message}</code><br><br>`;
+    if (Array.isArray(data) && data.length > 0 && data[0].error_type) {
+      resultDiv.className = "error-box";
+      let html = `<b>${t.errorHeader}</b><br><br>`;
+      data.forEach((err, i) => {
+        html += `<b>${t.errorLabel} ${i + 1}:</b><br>
+                 ${t.errorTypeLabel} ${err.error_type}<br>
+                 ${t.explanationLabel} ${err.explanation}<br>
+                 ${t.lineLabel} ${err.line}<br>
+                 ${t.originalMsgLabel} <code>${err.original_message}</code><br><br>`;
 
-            // Hatalı satırı işaretle
-            const lineNumber = parseInt(err.line) - 1;
-            if (!isNaN(lineNumber)) {
-              editor.markText(
-                {line: lineNumber, ch: 0},
-                {line: lineNumber, ch: editor.getLine(lineNumber).length},
-                {className: "line-error-highlight"}
-              );
-            }
-          });
-          resultDiv.innerHTML = html;
-        } else if (data.error_type) {
-          resultDiv.className = "error-box";
-          resultDiv.innerHTML = `
-            Hata Türü: ${data.error_type}<br>
-            Açıklama: ${data.explanation}<br>
-            Satır: ${data.line}<br>
-            Orijinal Mesaj: <code>${data.original_message}</code>
-          `;
-
-          const lineNumber = parseInt(data.line) - 1;
-          if (!isNaN(lineNumber)) {
-            editor.markText(
-              {line: lineNumber, ch: 0},
-              {line: lineNumber, ch: editor.getLine(lineNumber).length},
-              {className: "line-error-highlight"}
-            );
-          }
-        } else {
-          resultDiv.className = "success-box";
-          resultDiv.innerHTML = `<b>Kodda hata bulunamadı.</b>`;
+        // Hatalı satırı işaretle (CodeMirror 0-index)
+        const lineNumber = parseInt(err.line, 10) - 1;
+        if (!isNaN(lineNumber) && lineNumber >= 0) {
+          editor.markText(
+            { line: lineNumber, ch: 0 },
+            { line: lineNumber, ch: editor.getLine(lineNumber).length },
+            { className: "error-line" }
+          );
         }
+      });
+      resultDiv.innerHTML = html;
 
-      } catch (error) {
-        resultDiv.className = "error-box";
-        resultDiv.textContent = "Hata: API'ye ulaşılamıyor.";
+    } else if (data.error_type) {
+      // Tekil hata obje formatı (eski yapı destekli)
+      resultDiv.className = "error-box";
+      resultDiv.innerHTML = `
+        ${t.errorTypeLabel} ${data.error_type}<br>
+        ${t.explanationLabel} ${data.explanation}<br>
+        ${t.lineLabel} ${data.line}<br>
+        ${t.originalMsgLabel} <code>${data.original_message}</code>
+      `;
+
+      const lineNumber = parseInt(data.line, 10) - 1;
+      if (!isNaN(lineNumber) && lineNumber >= 0) {
+        editor.markText(
+          { line: lineNumber, ch: 0 },
+          { line: lineNumber, ch: editor.getLine(lineNumber).length },
+          { className: "error-line" }
+        );
       }
+    } else {
+      resultDiv.className = "success-box";
+      resultDiv.innerHTML = `<b>${t.noError}</b>`;
     }
+
+  } catch (error) {
+    resultDiv.className = "error-box";
+    resultDiv.textContent = t.apiError;
+  }
+}
+
 
     function clearCode() {
       editor.setValue("");
