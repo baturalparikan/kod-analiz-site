@@ -268,7 +268,7 @@
   }
 }
 function updateLanguageTexts() {
-    const lang = document.getElementById("languageSelect").value;
+    const lang = document.getElementById("lang").value;
 
     // Paste butonunu dil seçimine göre ayarla
     const pasteBtn = document.getElementById("pasteBtn");
@@ -281,7 +281,8 @@ function updateLanguageTexts() {
 updateLanguageTexts();
 
 // Dil değiştirildiğinde çalışsın
-document.getElementById("languageSelect").addEventListener("change", updateLanguageTexts);
+document.getElementById("lang").addEventListener("change", updateLanguageTexts);
+
 </script>
 </body>
 </html>
