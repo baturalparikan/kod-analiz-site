@@ -123,6 +123,7 @@ const translations = {
     explanationLabel: "Explanation:",
     lineLabel: "Line:",
     originalMsgLabel: "Original Message:"
+     description: "Paste your Python code below and click Analyze to find errors."
   },
   tr: {
     title: "Kod Analiz Aracı",
@@ -131,6 +132,7 @@ const translations = {
     clear: "Temizle",
     result_Placeholder: "Sonuç burada görünecek...",
     analyzing: "Analiz ediliyor...",
+    description: "Python kodunuzu aşağıya yapıştırın ve Analiz Et'e tıklayın.",
     apiError: "Hata: API'ye ulaşılamıyor.",
     noError: "Kodda hata bulunamadı.",
     errorHeader: "Bulunan Hatalar:",
@@ -148,15 +150,18 @@ const titleEl = document.getElementById("title");
 const labelEl = document.querySelector('label[for="lang"]');
 const analyzeBtnEl = document.getElementById("analyzeBtn");
 const clearBtnEl = document.getElementById("clearBtn");
+const descriptionEl = document.getElementById("description");
 const resultDivEl = document.getElementById("result");
 
 // Dili uygula (UI metinlerini günceller)
 function applyLanguage(lang) {
   const t = translations[lang] || translations["en"];
 
+
   // sayfa elementlerini değiştir
   if (titleEl) titleEl.textContent = t.title;
   if (labelEl) labelEl.textContent = t.labelLang;
+  if (descriptionEl) descriptionEl.textContent = t.description;
   if (analyzeBtnEl) analyzeBtnEl.textContent = t.analyze;
   if (clearBtnEl) clearBtnEl.textContent = t.clear;
 
