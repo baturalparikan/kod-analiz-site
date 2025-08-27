@@ -111,6 +111,8 @@
     </select>
     <button id="analyzeBtn" onclick="analyzeCode()">Analiz Et</button>
     <button id="clearBtn" onclick="clearCode()">Temizle</button>
+    <button id="pasteBtn" onclick="pasteCode()">Yapıştır</button>
+
     <div id="result">Sonuç burada görünecek...</div>
   </div>
 
@@ -256,6 +258,15 @@
       resultDivEl.className = "";
       editor.getAllMarks().forEach(mark => mark.clear());
     }
+    async function pasteCode() {
+  try {
+    const text = await navigator.clipboard.readText();
+    editor.setValue(text);
+  } catch (err) {
+    alert("Panoya erişim reddedildi! Tarayıcı izin vermiyor olabilir.");
+    console.error("Clipboard error:", err);
+  }
+}
   </script>
 </body>
 </html>
