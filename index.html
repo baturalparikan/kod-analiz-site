@@ -208,20 +208,28 @@
           resultDiv.className = "error-box";
           let html = `<b>${t.errorHeader}</b><br><br>`;
           data.forEach((err, i) => {
-            html += `<b>${t.errorLabel} ${i + 1}:</b><br>
-                     ${t.errorTypeLabel} ${err.error_type}<br>
-                     ${t.explanationLabel} ${err.explanation}<br>
-                     ${t.lineLabel} ${err.line}<br>
-                     ${t.originalMsgLabel} <code>${err.original_message}</code><br><br>`;
-            const lineNumber = parseInt(err.line, 10) - 1;
-            if (!isNaN(lineNumber) && lineNumber >= 0) {
-              editor.markText(
-                { line: lineNumber, ch: 0 },
-                { line: lineNumber, ch: editor.getLine(lineNumber).length },
-                { className: "error-line" }
-              );
-            }
-          });
+  // Eğer explanation veya solution nested object ise string hâline getir
+  const explanation = typeof err.explanation === "object" ? JSON.stringify(err.explanation) : err.explanation;
+  const solution = typeof err.solution === "object" ? JSON.stringify(err.solution) : err.solution;
+
+  html += `<b>${t.errorLabel} ${i + 1}:</b><br>
+           ${t.errorTypeLabel} ${err.error_type}<br>
+           ${t.explanationLabel} ${explanation}<br>
+           ${t.lineLabel} ${err.line}<br>
+           ${t.originalMsgLabel} <code>${err.original_message}</code><br>
+           <b>Çözüm:</b> ${solution}<br><br>`;
+
+  const lineNumber = parseInt(err.line, 10) - 1;
+  if (!isNaN(lineNumber) && lineNumber >= 0) {
+    editor.markText(
+      { line: lineNumber, ch: 0 },
+      { line: lineNumber, ch: editor.getLine(lineNumber).length },
+      { className: "error-line" }
+    );
+  }
+});
+
+      
           resultDiv.innerHTML = html;
         } else if (data.error_type) {
           resultDiv.className = "error-box";
