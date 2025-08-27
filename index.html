@@ -267,6 +267,21 @@
     console.error("Clipboard error:", err);
   }
 }
-  </script>
+function updateLanguageTexts() {
+    const lang = document.getElementById("languageSelect").value;
+
+    // Paste butonunu dil seçimine göre ayarla
+    const pasteBtn = document.getElementById("pasteBtn");
+    if (pasteBtn) {
+        pasteBtn.textContent = lang === "tr" ? "Yapıştır" : "Paste";
+    }
+}
+
+// Sayfa açıldığında çalışsın
+updateLanguageTexts();
+
+// Dil değiştirildiğinde çalışsın
+document.getElementById("languageSelect").addEventListener("change", updateLanguageTexts);
+</script>
 </body>
 </html>
