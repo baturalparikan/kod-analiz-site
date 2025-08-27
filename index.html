@@ -6,6 +6,10 @@
   <title>Kod Analiz Aracı</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css" />
   <style>
+    .error-line {
+  background-color: #ffcccc !important;
+}
+
     body {
       font-family: "Times New Roman", serif;
       display: flex;
@@ -174,6 +178,22 @@
       resultDiv.className = "";
       editor.getAllMarks().forEach(mark => mark.clear());
     }
+    // Hatalı satırları işaretleme (CodeMirror için)
+function highlightErrors(errors) {
+  // Önce eski işaretlemeleri temizle
+  editor.getAllMarks().forEach(mark => mark.clear());
+
+  errors.forEach(error => {
+    if (error.line) {
+      editor.markText(
+        { line: error.line - 1, ch: 0 },   // Satır başlangıcı (CodeMirror 0'dan sayar)
+        { line: error.line - 1, ch: 999 }, // Satır sonuna kadar
+        { className: "error-line" }        // CSS sınıfı
+      );
+    }
+  });
+}
+
   </script>
 </body>
 </html>
