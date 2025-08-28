@@ -20,35 +20,34 @@
     }
 
     .language-switch {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  display: flex;
-  gap: 10px;
-}
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      gap: 10px;
+    }
 
-.language-switch img {
-  width: 64px;
-  height: 64px;
-  cursor: pointer;
-  opacity: 0.6;
-  transition: opacity 0.3s;
-}
+    .language-switch img {
+      width: 64px;
+      height: 64px;
+      cursor: pointer;
+      opacity: 0.6;
+      transition: opacity 0.3s;
+    }
 
-.language-switch img.active {
-  opacity: 1;
-  transform: scale(1.1);
-}
-
+    .language-switch img.active {
+      opacity: 1;
+      transform: scale(1.1);
+    }
 
     .logo {
       font-family: "Times New Roman", serif;
       font-size: 24px;
       font-weight: bold;
-      position: absolute; /* ekranın üstüne sabitler */
-      top: 20px;           /* üstten boşluk */
-      left: 20px;          /* soldan boşluk */
-      color: #333;         /* renk, isteğe göre değişebilir */
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      color: #333;
     }
 
     .container {
@@ -100,23 +99,22 @@
       border: 1px solid #009900;
       color: #003300;
     }
-    /* CodeMirror’un genişliğini ayarlamak için */
-.CodeMirror {
-  width: 100%;       /* Container genişliği kadar genişlesin */
-  min-width: 600px;  /* Çok dar olmasını engeller, isteğe bağlı */
-}
 
+    .CodeMirror {
+      width: 100%;
+      min-width: 600px;
+    }
   </style>
 </head>
 <body>
   <div class="logo">
-  PyInspect
-</div>
-<div class="language-switch">
-  <img id="pythonBtn" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="Python" onclick="setLanguage('Python')" class="active">
-  <img id="javaBtn" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg" alt="Java" onclick="setLanguage('Java')">
-</div>
+    PyInspect
+  </div>
 
+  <div class="language-switch">
+    <img id="pythonBtn" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="Python" onclick="setLanguage('Python')">
+    <img id="javaBtn" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg" alt="Java" onclick="setLanguage('Java')">
+  </div>
 
   <div class="container">
     <h2 id="title">Kod Analiz Aracı</h2>
@@ -146,6 +144,37 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/python/python.min.js"></script>
   <script>
+    // Python varsayılan seçili olacak
+    let currentLang = "Python";
+
+    function setLanguage(lang) {
+      currentLang = lang;
+
+      const editorContainer = document.querySelector(".CodeMirror");
+      let langLabel = document.getElementById("selected-lang");
+      if (!langLabel) {
+        langLabel = document.createElement("div");
+        langLabel.id = "selected-lang";
+        langLabel.style.position = "absolute";
+        langLabel.style.top = "10px";
+        langLabel.style.right = "10px";
+        langLabel.style.background = "#007bff";
+        langLabel.style.color = "white";
+        langLabel.style.padding = "2px 8px";
+        langLabel.style.borderRadius = "5px";
+        editorContainer.appendChild(langLabel);
+      }
+      langLabel.textContent = lang;
+
+      document.getElementById("pythonBtn").classList.remove("active");
+      document.getElementById("javaBtn").classList.remove("active");
+      if (lang === "Python") {
+        document.getElementById("pythonBtn").classList.add("active");
+      } else if (lang === "Java") {
+        document.getElementById("javaBtn").classList.add("active");
+      }
+    }
+
     const editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
       mode: "python",
       lineNumbers: true,
@@ -230,10 +259,10 @@
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ 
-  code: code, 
-  lang: lang,               // Arayüz dili (Türkçe / İngilizce vs.)
-  programming_language: currentLang  // Seçilen programlama dili (Python / Java)
-})
+            code: code, 
+            lang: lang,
+            programming_language: currentLang
+          })
         });
         const data = await response.json();
 
@@ -241,28 +270,25 @@
           resultDiv.className = "error-box";
           let html = `<b>${t.errorHeader}</b><br><br>`;
           data.forEach((err, i) => {
-  // Eğer explanation veya solution nested object ise string hâline getir
-  const explanation = typeof err.explanation === "object" ? JSON.stringify(err.explanation) : err.explanation;
-  const solution = typeof err.solution === "object" ? JSON.stringify(err.solution) : err.solution;
+            const explanation = typeof err.explanation === "object" ? JSON.stringify(err.explanation) : err.explanation;
+            const solution = typeof err.solution === "object" ? JSON.stringify(err.solution) : err.solution;
 
-  html += `<b>${t.errorLabel} ${i + 1}:</b><br>
-           ${t.errorTypeLabel} ${err.error_type}<br>
-           ${t.explanationLabel} ${explanation}<br>
-           ${t.lineLabel} ${err.line}<br>
-           ${t.originalMsgLabel} <code>${err.original_message}</code><br>
-           <b>Çözüm:</b> ${solution}<br><br>`;
+            html += `<b>${t.errorLabel} ${i + 1}:</b><br>
+                     ${t.errorTypeLabel} ${err.error_type}<br>
+                     ${t.explanationLabel} ${explanation}<br>
+                     ${t.lineLabel} ${err.line}<br>
+                     ${t.originalMsgLabel} <code>${err.original_message}</code><br>
+                     <b>Çözüm:</b> ${solution}<br><br>`;
 
-  const lineNumber = parseInt(err.line, 10) - 1;
-  if (!isNaN(lineNumber) && lineNumber >= 0) {
-    editor.markText(
-      { line: lineNumber, ch: 0 },
-      { line: lineNumber, ch: editor.getLine(lineNumber).length },
-      { className: "error-line" }
-    );
-  }
-});
-
-      
+            const lineNumber = parseInt(err.line, 10) - 1;
+            if (!isNaN(lineNumber) && lineNumber >= 0) {
+              editor.markText(
+                { line: lineNumber, ch: 0 },
+                { line: lineNumber, ch: editor.getLine(lineNumber).length },
+                { className: "error-line" }
+              );
+            }
+          });
           resultDiv.innerHTML = html;
         } else if (data.error_type) {
           resultDiv.className = "error-box";
@@ -276,7 +302,6 @@
           resultDiv.className = "success-box";
           resultDiv.innerHTML = `<b>${t.noError}</b>`;
         }
-
       } catch (error) {
         resultDiv.className = "error-box";
         resultDiv.textContent = t.apiError;
@@ -289,63 +314,33 @@
       resultDivEl.className = "";
       editor.getAllMarks().forEach(mark => mark.clear());
     }
+
     async function pasteCode() {
-  try {
-    const text = await navigator.clipboard.readText();
-    editor.setValue(text);
-  } catch (err) {
-    alert("Panoya erişim reddedildi! Tarayıcı izin vermiyor olabilir.");
-    console.error("Clipboard error:", err);
-  }
-}
-function updateLanguageTexts() {
-    const lang = document.getElementById("lang").value;
-
-    // Paste butonunu dil seçimine göre ayarla
-    const pasteBtn = document.getElementById("pasteBtn");
-    if (pasteBtn) {
-        pasteBtn.textContent = lang === "tr" ? "Yapıştır" : "Paste";
+      try {
+        const text = await navigator.clipboard.readText();
+        editor.setValue(text);
+      } catch (err) {
+        alert("Panoya erişim reddedildi! Tarayıcı izin vermiyor olabilir.");
+        console.error("Clipboard error:", err);
+      }
     }
-}
-let currentLang = "Python";
 
-function setLanguage(lang) {
-  currentLang = lang;
+    function updateLanguageTexts() {
+      const lang = document.getElementById("lang").value;
+      const pasteBtn = document.getElementById("pasteBtn");
+      if (pasteBtn) {
+        pasteBtn.textContent = lang === "tr" ? "Yapıştır" : "Paste";
+      }
+    }
 
-  // Editörün sağ üstünde hangi dil seçili yazsın
-  const editorContainer = document.querySelector(".CodeMirror");
-  let langLabel = document.getElementById("selected-lang");
-  if (!langLabel) {
-    langLabel = document.createElement("div");
-    langLabel.id = "selected-lang";
-    langLabel.style.position = "absolute";
-    langLabel.style.top = "10px";
-    langLabel.style.right = "10px";
-    langLabel.style.background = "#007bff";
-    langLabel.style.color = "white";
-    langLabel.style.padding = "2px 8px";
-    langLabel.style.borderRadius = "5px";
-    editorContainer.appendChild(langLabel);
-  }
-  langLabel.textContent = lang;
+    // Sayfa açıldığında Python ikonunu varsayılan yap
+    window.onload = function() {
+      updateLanguageTexts();
+      setLanguage(currentLang);
+    }
 
-  // Buton aktifliğini ayarla
-  document.getElementById("pythonBtn").classList.remove("active");
-  document.getElementById("javaBtn").classList.remove("active");
-  if (lang === "Python") {
-    document.getElementById("pythonBtn").classList.add("active");
-  } else if (lang === "Java") {
-    document.getElementById("javaBtn").classList.add("active");
-  }
-}
-
-// Sayfa açıldığında çalışsın
-updateLanguageTexts();
-
-// Dil değiştirildiğinde çalışsın
-document.getElementById("lang").addEventListener("change", updateLanguageTexts);
-
-
-</script>
+    // Dil değiştirildiğinde çalışsın
+    document.getElementById("lang").addEventListener("change", updateLanguageTexts);
+  </script>
 </body>
 </html>
