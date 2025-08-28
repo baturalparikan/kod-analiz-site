@@ -134,18 +134,18 @@
       pasteBtnEl.textContent = t.paste;
       resultDivEl.textContent = t.result_Placeholder;
       document.documentElement.lang = lang;
+      langSelect.value = lang; // dropdown da güncel dil gösterilsin
     }
 
     langSelect.addEventListener("change", (e) => applyLanguage(e.target.value));
 
     const DEFAULT_LANG = "en"; // site açıldığında İngilizce olacak
 
-window.onload = function() {
-  langSelect.value = DEFAULT_LANG;  // dropdown menü İngilizce
-  applyLanguage(DEFAULT_LANG);      // tüm metinler İngilizce
-  setLanguage(currentLang);         // otomatik Python/Java algılaması
-};
-
+    window.onload = function() {
+      applyLanguage(DEFAULT_LANG);      // tüm metinler İngilizce
+      langSelect.value = DEFAULT_LANG;   // dropdown menü İngilizce
+      setLanguage(currentLang);          // otomatik Python/Java algılaması
+    };
 
     const API_URL = "https://kod-analiz-api.onrender.com/analyze";
 
@@ -192,29 +192,25 @@ window.onload = function() {
 
     function clearCode() {
       editor.setValue("");
-      resultDivEl.textContent = translations[langSelect.value].result_Placeholder;
+      const lang = langSelect.value || DEFAULT_LANG;
+      resultDivEl.textContent = translations[lang].result_Placeholder;
       resultDivEl.className="";
       editor.getAllMarks().forEach(mark=>mark.clear());
     }
 
-     async function pasteCode() {
-  try {
-    const text = await navigator.clipboard.readText();
-    editor.setValue(text);
-    detectLanguage(); // ← burayı ekliyoruz
-  } catch(err) {
-    const lang = langSelect.value || "en";
-    const t = translations[lang];
-    alert(t.pasteError || "Clipboard access denied!");
-    console.error("Clipboard error:", err);
-  }
-}
-
-
-    window.onload=function(){
-      applyLanguage(DEFAULT_LANG);
-      setLanguage(currentLang);
+    async function pasteCode() {
+      try {
+        const text = await navigator.clipboard.readText();
+        editor.setValue(text);
+        detectLanguage();
+      } catch(err) {
+        const lang = langSelect.value || "en";
+        const t = translations[lang];
+        alert(t.pasteError || "Clipboard access denied!");
+        console.error("Clipboard error:", err);
+      }
     }
+
   </script>
 </body>
 </html>
