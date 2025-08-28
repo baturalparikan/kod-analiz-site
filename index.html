@@ -143,6 +143,7 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/python/python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/clike/clike.min.js"></script>
   <script>
     // Python varsayılan seçili olacak
     let currentLang = "Python";
@@ -170,8 +171,10 @@
       document.getElementById("javaBtn").classList.remove("active");
       if (lang === "Python") {
         document.getElementById("pythonBtn").classList.add("active");
+        editor.setOption("mode", "python");
       } else if (lang === "Java") {
         document.getElementById("javaBtn").classList.add("active");
+        editor.setOption("mode", "text/x-java");
       }
     }
 
@@ -333,13 +336,11 @@
       }
     }
 
-    // Sayfa açıldığında Python ikonunu varsayılan yap
     window.onload = function() {
       updateLanguageTexts();
       setLanguage(currentLang);
     }
 
-    // Dil değiştirildiğinde çalışsın
     document.getElementById("lang").addEventListener("change", updateLanguageTexts);
   </script>
 </body>
