@@ -106,14 +106,148 @@
     editor.on("change", detectLanguage);
 
     const translations = {
-      en: { title:"Code Analysis Tool", description:"Paste your Python code below and click Analyze to find errors.", labelLang:"Language:", analyze:"Analyze", clear:"Clear", paste:"Paste", result_Placeholder:"Result will appear here...", analyzing:"Analyzing...", apiError:"Error: Can't reach API.", noError:"No errors found in code.", errorHeader:"Errors found:", errorLabel:"Error", errorTypeLabel:"Error Type:", explanationLabel:"Explanation:", lineLabel:"Line:", originalMsgLabel:"Original Message:", pasteError:"Clipboard access denied! Your browser may not allow it." },
-      tr: { title:"Kod Analiz Aracı", description:"Python kodunuzu aşağıya yapıştırın ve Analiz Et'e tıklayın.", labelLang:"Dil Seç:", analyze:"Analiz Et", clear:"Temizle", paste:"Yapıştır", result_Placeholder:"Sonuç burada görünecek...", analyzing:"Analiz ediliyor...", apiError:"Hata: API'ye ulaşılamıyor.", noError:"Kodda hata bulunamadı.", errorHeader:"Bulunan Hatalar:", errorLabel:"Hata", errorTypeLabel:"Hata Türü:", explanationLabel:"Açıklama:", lineLabel:"Satır:", originalMsgLabel:"Orijinal Mesaj:", pasteError:"Panoya erişim reddedildi! Tarayıcı izin vermiyor olabilir." },
-      de: { title:"Code Analyse Werkzeug", description:"Fügen Sie Ihren Python-Code unten ein und klicken Sie auf Analysieren.", labelLang:"Sprache:", analyze:"Analysieren", clear:"Löschen", paste:"Einfügen", result_Placeholder:"Ergebnis erscheint hier...", analyzing:"Analysiere...", apiError:"Fehler: API nicht erreichbar.", noError:"Keine Fehler im Code gefunden.", errorHeader:"Gefundene Fehler:", errorLabel:"Fehler", errorTypeLabel:"Fehlertyp:", explanationLabel:"Erklärung:", lineLabel:"Zeile:", originalMsgLabel:"Originalnachricht:", pasteError:"Zugriff auf die Zwischenablage verweigert! Der Browser erlaubt dies möglicherweise nicht." },
-      ru: { title:"Инструмент анализа кода", description:"Вставьте ваш Python-код ниже и нажмите Анализировать.", labelLang:"Язык:", analyze:"Анализировать", clear:"Очистить", paste:"Вставить", result_Placeholder:"Результат появится здесь...", analyzing:"Анализ...", apiError:"Ошибка: API недоступно.", noError:"Ошибок не найдено.", errorHeader:"Найденные ошибки:", errorLabel:"Ошибка", errorTypeLabel:"Тип ошибки:", explanationLabel:"Объяснение:", lineLabel:"Строка:", originalMsgLabel:"Оригинальное сообщение:", pasteError:"Доступ к буферу обмена запрещен! Браузер может не разрешать это." },
-      ar: { title:"أداة تحليل الكود", description:"ألصق كود Python أدناه وانقر على تحليل للعثور على الأخطاء.", labelLang:"اللغة:", analyze:"تحليل", clear:"مسح", paste:"لصق", result_Placeholder:"ستظهر النتيجة هنا...", analyzing:"جارٍ التحليل...", apiError:"خطأ: لا يمكن الوصول إلى API.", noError:"لم يتم العثور على أي أخطاء في الكود.", errorHeader:"الأخطاء الموجودة:", errorLabel:"خطأ", errorTypeLabel:"نوع الخطأ:", explanationLabel:"تفسير:", lineLabel:"السطر:", originalMsgLabel:"الرسالة الأصلية:", pasteError:"تم رفض الوصول إلى الحافظة! قد لا يسمح المتصفح بذلك." },
-      zh: { title:"代码分析工具", description:"将您的Python代码粘贴到下面，然后点击分析以查找错误。", labelLang:"语言:", analyze:"分析", clear:"清除", paste:"粘贴", result_Placeholder:"结果将在此显示...", analyzing:"分析中...", apiError:"错误：无法访问API。", noError:"代码中未发现错误。", errorHeader:"发现的错误:", errorLabel:"错误", errorTypeLabel:"错误类型:", explanationLabel:"解释:", lineLabel:"行:", originalMsgLabel:"原始消息:", pasteError:"剪贴板访问被拒绝！浏览器可能不允许。" },
-      es: { title:"Herramienta de Análisis de Código", description:"Pegue su código Python a continuación y haga clic en Analizar para encontrar errores.", labelLang:"Idioma:", analyze:"Analizar", clear:"Borrar", paste:"Pegar", result_Placeholder:"El resultado aparecerá aquí...", analyzing:"Analizando...", apiError:"Error: No se puede acceder a la API.", noError:"No se encontraron errores en el código.", errorHeader:"Errores encontrados:", errorLabel:"Error", errorTypeLabel:"Tipo de Error:", explanationLabel:"Explicación:", lineLabel:"Línea:", originalMsgLabel:"Mensaje Original:", pasteError:"Acceso al portapapeles denegado! Su navegador puede no permitirlo." }
-    };
+  en: { 
+    title:"Code Analysis Tool",
+    description:"Paste your Python code below and click Analyze to find errors.",
+    labelLang:"Language:",
+    analyze:"Analyze",
+    clear:"Clear",
+    paste:"Paste",
+    result_Placeholder:"Result will appear here...",
+    analyzing:"Analyzing...",
+    apiError:"Error: Can't reach API.",
+    noError:"No errors found in code.",
+    errorHeader:"Errors found:",
+    errorLabel:"Error",
+    errorTypeLabel:"Error Type:",
+    explanationLabel:"Explanation:",
+    lineLabel:"Line:",
+    originalMsgLabel:"Original Message:",
+    pasteError:"Clipboard access denied! Your browser may not allow it.",
+    solutionLabel: "Solution" // ← eklendi
+  },
+  tr: { 
+    title:"Kod Analiz Aracı",
+    description:"Python kodunuzu aşağıya yapıştırın ve Analiz Et'e tıklayın.",
+    labelLang:"Dil Seç:",
+    analyze:"Analiz Et",
+    clear:"Temizle",
+    paste:"Yapıştır",
+    result_Placeholder:"Sonuç burada görünecek...",
+    analyzing:"Analiz ediliyor...",
+    apiError:"Hata: API'ye ulaşılamıyor.",
+    noError:"Kodda hata bulunamadı.",
+    errorHeader:"Bulunan Hatalar:",
+    errorLabel:"Hata",
+    errorTypeLabel:"Hata Türü:",
+    explanationLabel:"Açıklama:",
+    lineLabel:"Satır:",
+    originalMsgLabel:"Orijinal Mesaj:",
+    pasteError:"Panoya erişim reddedildi! Tarayıcı izin vermiyor olabilir.",
+    solutionLabel: "Çözüm" // ← eklendi
+  },
+  de: { 
+    title:"Code Analyse Werkzeug",
+    description:"Fügen Sie Ihren Python-Code unten ein und klicken Sie auf Analysieren.",
+    labelLang:"Sprache:",
+    analyze:"Analysieren",
+    clear:"Löschen",
+    paste:"Einfügen",
+    result_Placeholder:"Ergebnis erscheint hier...",
+    analyzing:"Analysiere...",
+    apiError:"Fehler: API nicht erreichbar.",
+    noError:"Keine Fehler im Code gefunden.",
+    errorHeader:"Gefundene Fehler:",
+    errorLabel:"Fehler",
+    errorTypeLabel:"Fehlertyp:",
+    explanationLabel:"Erklärung:",
+    lineLabel:"Zeile:",
+    originalMsgLabel:"Originalnachricht:",
+    pasteError:"Zugriff auf die Zwischenablage verweigert! Der Browser erlaubt dies möglicherweise nicht.",
+    solutionLabel: "Lösung" // ← eklendi
+  },
+  ru: { 
+    title:"Инструмент анализа кода",
+    description:"Вставьте ваш Python-код ниже и нажмите Анализировать.",
+    labelLang:"Язык:",
+    analyze:"Анализировать",
+    clear:"Очистить",
+    paste:"Вставить",
+    result_Placeholder:"Результат появится здесь...",
+    analyzing:"Анализ...",
+    apiError:"Ошибка: API недоступно.",
+    noError:"Ошибок не найдено.",
+    errorHeader:"Найденные ошибки:",
+    errorLabel:"Ошибка",
+    errorTypeLabel:"Тип ошибки:",
+    explanationLabel:"Объяснение:",
+    lineLabel:"Строка:",
+    originalMsgLabel:"Оригинальное сообщение:",
+    pasteError:"Доступ к буферу обмена запрещен! Браузер может не разрешать это.",
+    solutionLabel: "Решение" // ← eklendi
+  },
+  ar: { 
+    title:"أداة تحليل الكود",
+    description:"ألصق كود Python أدناه وانقر على تحليل للعثور على الأخطاء.",
+    labelLang:"اللغة:",
+    analyze:"تحليل",
+    clear:"مسح",
+    paste:"لصق",
+    result_Placeholder:"ستظهر النتيجة هنا...",
+    analyzing:"جارٍ التحليل...",
+    apiError:"خطأ: لا يمكن الوصول إلى API.",
+    noError:"لم يتم العثور على أي أخطاء في الكود.",
+    errorHeader:"الأخطاء الموجودة:",
+    errorLabel:"خطأ",
+    errorTypeLabel:"نوع الخطأ:",
+    explanationLabel:"تفسير:",
+    lineLabel:"السطر:",
+    originalMsgLabel:"الرسالة الأصلية:",
+    pasteError:"تم رفض الوصول إلى الحافظة! قد لا يسمح المتصفح بذلك.",
+    solutionLabel: "الحل" // ← eklendi
+  },
+  zh: { 
+    title:"代码分析工具",
+    description:"将您的Python代码粘贴到下面，然后点击分析以查找错误。",
+    labelLang:"语言:",
+    analyze:"分析",
+    clear:"清除",
+    paste:"粘贴",
+    result_Placeholder:"结果将在此显示...",
+    analyzing:"分析中...",
+    apiError:"错误：无法访问API。",
+    noError:"代码中未发现错误。",
+    errorHeader:"发现的错误:",
+    errorLabel:"错误",
+    errorTypeLabel:"错误类型:",
+    explanationLabel:"解释:",
+    lineLabel:"行:",
+    originalMsgLabel:"原始消息:",
+    pasteError:"剪贴板访问被拒绝！浏览器可能不允许。",
+    solutionLabel: "解决方案" // ← eklendi
+  },
+  es: { 
+    title:"Herramienta de Análisis de Código",
+    description:"Pegue su código Python a continuación y haga clic en Analizar para encontrar errores.",
+    labelLang:"Idioma:",
+    analyze:"Analizar",
+    clear:"Borrar",
+    paste:"Pegar",
+    result_Placeholder:"El resultado aparecerá aquí...",
+    analyzing:"Analizando...",
+    apiError:"Error: No se puede acceder a la API.",
+    noError:"No se encontraron errores en el código.",
+    errorHeader:"Errores encontrados:",
+    errorLabel:"Error",
+    errorTypeLabel:"Tipo de Error:",
+    explanationLabel:"Explicación:",
+    lineLabel:"Línea:",
+    originalMsgLabel:"Mensaje Original:",
+    pasteError:"Acceso al portapapeles denegado! Su navegador puede no permitirlo.",
+    solutionLabel: "Solución" // ← eklendi
+  }
+};
+
 
     const langSelect = document.getElementById("lang");
     const titleEl = document.getElementById("title");
@@ -172,7 +306,8 @@
           data.forEach((err,i)=>{
             const explanation=typeof err.explanation==="object"?JSON.stringify(err.explanation):err.explanation;
             const solution=typeof err.solution==="object"?JSON.stringify(err.solution):err.solution;
-            html+=`<b>${t.errorLabel} ${i+1}:</b><br>${t.errorTypeLabel} ${err.error_type}<br>${t.explanationLabel} ${explanation}<br>${t.lineLabel} ${err.line}<br>${t.originalMsgLabel} <code>${err.original_message}</code><br><b>Çözüm:</b> ${solution}<br><br>`;
+            html+=`<b>${t.errorLabel} ${i+1}:</b><br>${t.errorTypeLabel} ${err.error_type}<br>${t.explanationLabel} ${explanation}<br>${t.lineLabel} ${err.line}<br>${t.originalMsgLabel} <code>${err.original_message}</code><br><b>${t.solutionLabel}:</b>
+ ${solution}<br><br>`;
             const lineNumber=parseInt(err.line,10)-1;
             if(!isNaN(lineNumber)&&lineNumber>=0) editor.markText({line:lineNumber,ch:0},{line:lineNumber,ch:editor.getLine(lineNumber).length},{className:"error-line"});
           });
