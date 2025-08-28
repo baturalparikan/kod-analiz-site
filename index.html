@@ -6,37 +6,167 @@
   <title>Kod Analiz Aracı</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css" />
   <style>
-    .error-line { background-color: #ffcccc !important; }
+    :root {
+      --bg-color: #f9f9f9;
+      --text-color: #333;
+      --container-bg: white;
+      --container-shadow: rgba(0,0,0,0.1);
+      --btn-bg: #007bff;
+      --btn-hover: #0056b3;
+      --error-bg: #ffe6e6;
+      --error-border: #cc0000;
+      --error-text: #660000;
+      --success-bg: #e6ffe6;
+      --success-border: #009900;
+      --success-text: #003300;
+    }
+
     body {
       font-family: "Times New Roman", serif;
-      display: flex; justify-content: center; align-items: center;
-      height: 100vh; background-color: #f9f9f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      transition: all 0.3s ease;
     }
+
+    .dark-mode {
+      --bg-color: #121212;
+      --text-color: #f1f1f1;
+      --container-bg: #1e1e1e;
+      --container-shadow: rgba(255,255,255,0.1);
+      --btn-bg: #1f6feb;
+      --btn-hover: #0353e9;
+      --error-bg: #66000033;
+      --error-border: #ff6666;
+      --error-text: #ffaaaa;
+      --success-bg: #00660033;
+      --success-border: #00ff00;
+      --success-text: #aaffaa;
+    }
+
+    .error-line {
+      background-color: #ffcccc !important;
+    }
+
     .language-switch {
-      position: absolute; top: 20px; right: 20px; display: flex; gap: 10px;
+      position: absolute;
+      top: 20px;
+      right: 120px; /* dark mode switch eklediğimiz için biraz sola aldık */
+      display: flex;
+      gap: 10px;
     }
-    .language-switch img { width: 64px; height: 64px; cursor: pointer; opacity: 0.6; transition: opacity 0.3s; }
-    .language-switch img.active { opacity: 1; transform: scale(1.1); }
+
+    .language-switch img {
+      width: 64px;
+      height: 64px;
+      cursor: pointer;
+      opacity: 0.6;
+      transition: opacity 0.3s;
+    }
+
+    .language-switch img.active {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+
     .logo {
-      font-family: "Times New Roman", serif; font-size: 24px; font-weight: bold;
-      position: absolute; top: 20px; left: 20px; color: #333;
+      font-family: "Times New Roman", serif;
+      font-size: 24px;
+      font-weight: bold;
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      color: var(--text-color);
     }
+
     .container {
-      background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 800px;
+      background: var(--container-bg);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px var(--container-shadow);
+      width: 800px;
+      transition: all 0.3s ease;
     }
-    h2 { text-align: center; margin-bottom: 15px; }
-    #editor { border: 1px solid #ddd; border-radius: 5px; height: 200px; width: 100%; }
-    select, button { margin-top: 10px; padding: 8px 12px; border-radius: 5px; border: 1px solid #ccc; font-family: "Times New Roman", serif; }
-    button { background-color: #007bff; color: white; border: none; cursor: pointer; }
-    button:hover { background-color: #0056b3; }
-    #result { margin-top: 15px; padding: 12px; border-radius: 5px; font-size: 15px; }
-    .error-box { background-color: #ffe6e6; border: 1px solid #cc0000; color: #660000; }
-    .success-box { background-color: #e6ffe6; border: 1px solid #009900; color: #003300; }
-    .CodeMirror { width: 100%; min-width: 600px; }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    #editor {
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      height: 200px;
+      width: 100%;
+    }
+
+    select, button {
+      margin-top: 10px;
+      padding: 8px 12px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-family: "Times New Roman", serif;
+      transition: all 0.3s ease;
+    }
+
+    button {
+      background-color: var(--btn-bg);
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: var(--btn-hover);
+    }
+
+    #result {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 5px;
+      font-size: 15px;
+    }
+
+    .error-box {
+      background-color: var(--error-bg);
+      border: 1px solid var(--error-border);
+      color: var(--error-text);
+    }
+
+    .success-box {
+      background-color: var(--success-bg);
+      border: 1px solid var(--success-border);
+      color: var(--success-text);
+    }
+
+    .CodeMirror {
+      width: 100%;
+      min-width: 600px;
+      transition: all 0.3s ease;
+    }
+
+    #darkModeSwitch {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 8px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+      background-color: var(--btn-bg);
+      color: white;
+      border: none;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
   </style>
 </head>
 <body>
   <div class="logo">PyInspect</div>
+
+  <button id="darkModeSwitch" onclick="toggleDarkMode()">🌙 Koyu Mod</button>
 
   <div class="language-switch">
     <img id="pythonBtn" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="Python" onclick="setLanguage('Python')">
@@ -45,7 +175,10 @@
 
   <div class="container">
     <h2 id="title">Kod Analiz Aracı</h2>
-    <p id="description" style="text-align:center; color:#555; margin-bottom:15px;">Python kodunuzu aşağıya yapıştırın ve Analiz Et'e tıklayın.</p>
+    <p id="description" style="text-align:center; color:#555; margin-bottom:15px;">
+      Python kodunuzu aşağıya yapıştırın ve Analiz Et'e tıklayın.
+    </p>
+
     <textarea id="editor"></textarea>
     <br>
     <label for="lang">Dil Seç:</label>
@@ -61,13 +194,13 @@
     <button id="analyzeBtn" onclick="analyzeCode()">Analiz Et</button>
     <button id="clearBtn" onclick="clearCode()">Temizle</button>
     <button id="pasteBtn" onclick="pasteCode()">Yapıştır</button>
+
     <div id="result">Sonuç burada görünecek...</div>
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/python/python.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/clike/clike.min.js"></script>
-
   <script>
     let currentLang = "Python";
 
@@ -91,25 +224,56 @@
 
       document.getElementById("pythonBtn").classList.remove("active");
       document.getElementById("javaBtn").classList.remove("active");
-      if (lang === "Python") { document.getElementById("pythonBtn").classList.add("active"); editor.setOption("mode", "python"); }
-      else if (lang === "Java") { document.getElementById("javaBtn").classList.add("active"); editor.setOption("mode", "text/x-java"); }
+      if (lang === "Python") {
+        document.getElementById("pythonBtn").classList.add("active");
+        editor.setOption("mode", "python");
+      } else if (lang === "Java") {
+        document.getElementById("javaBtn").classList.add("active");
+        editor.setOption("mode", "text/x-java");
+      }
     }
 
-    const editor = CodeMirror.fromTextArea(document.getElementById("editor"), { mode: "python", lineNumbers: true, theme: "default" });
-
-    // --- Otomatik dil algılama ---
-    function detectLanguage() {
-      const code = editor.getValue().trim();
-      if (code.startsWith("import") || code.includes("def ") || code.includes("print(")) { setLanguage("Python"); }
-      else if (code.includes("public") || code.includes("class") || code.includes("System.out")) { setLanguage("Java"); }
-    }
-
-    // Kod yazıldıkça otomatik kontrol
-    editor.on("change", detectLanguage);
+    const editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
+      mode: "python",
+      lineNumbers: true,
+      theme: "default"
+    });
 
     const translations = {
-      en: { title:"Code Analysis Tool", labelLang:"Language:", analyze:"Analyze", clear:"Clear", result_Placeholder:"Result will appear here...", analyzing:"Analyzing...", apiError:"Error: Can't reach API.", noError:"No errors found in code.", errorHeader:"Errors found:", errorLabel:"Error", errorTypeLabel:"Error Type:", explanationLabel:"Explanation:", lineLabel:"Line:", originalMsgLabel:"Original Message:", description:"Paste your Python code below and click Analyze to find errors." },
-      tr: { title:"Kod Analiz Aracı", labelLang:"Dil Seç:", analyze:"Analiz Et", clear:"Temizle", result_Placeholder:"Sonuç burada görünecek...", analyzing:"Analiz ediliyor...", apiError:"Hata: API'ye ulaşılamıyor.", noError:"Kodda hata bulunamadı.", errorHeader:"Bulunan Hatalar:", errorLabel:"Hata", errorTypeLabel:"Hata Türü:", explanationLabel:"Açıklama:", lineLabel:"Satır:", originalMsgLabel:"Orijinal Mesaj:", description:"Python kodunuzu aşağıya yapıştırın ve Analiz Et'e tıklayın." }
+      en: {
+        title: "Code Analysis Tool",
+        labelLang: "Language:",
+        analyze: "Analyze",
+        clear: "Clear",
+        result_Placeholder: "Result will appear here...",
+        analyzing: "Analyzing...",
+        apiError: "Error: Can't reach API.",
+        noError: "No errors found in code.",
+        errorHeader: "Errors found:",
+        errorLabel: "Error",
+        errorTypeLabel: "Error Type:",
+        explanationLabel: "Explanation:",
+        lineLabel: "Line:",
+        originalMsgLabel: "Original Message:",
+        description: "Paste your Python code below and click Analyze to find errors."
+      },
+      tr: {
+        title: "Kod Analiz Aracı",
+        labelLang: "Dil Seç:",
+        analyze: "Analiz Et",
+        clear: "Temizle",
+        result_Placeholder: "Sonuç burada görünecek...",
+        analyzing: "Analiz ediliyor...",
+        apiError: "Hata: API'ye ulaşılamıyor.",
+        noError: "Kodda hata bulunamadı.",
+        errorHeader: "Bulunan Hatalar:",
+        errorLabel: "Hata",
+        errorTypeLabel: "Hata Türü:",
+        explanationLabel: "Açıklama:",
+        lineLabel: "Satır:",
+        originalMsgLabel: "Orijinal Mesaj:",
+        description: "Python kodunuzu aşağıya yapıştırın ve Analiz Et'e tıklayın."
+      }
     };
 
     const langSelect = document.getElementById("lang");
@@ -133,7 +297,9 @@
 
     langSelect.addEventListener("change", (e) => applyLanguage(e.target.value));
 
-    const DEFAULT_LANG = "en"; langSelect.value = DEFAULT_LANG; applyLanguage(DEFAULT_LANG);
+    const DEFAULT_LANG = "en";
+    langSelect.value = DEFAULT_LANG;
+    applyLanguage(DEFAULT_LANG);
 
     const API_URL = "https://kod-analiz-api.onrender.com/analyze";
 
@@ -150,54 +316,91 @@
         const response = await fetch(API_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ code: code, lang: lang, programming_language: currentLang })
+          body: JSON.stringify({ 
+            code: code, 
+            lang: lang,
+            programming_language: currentLang
+          })
         });
         const data = await response.json();
 
-        if (Array.isArray(data) && data.length>0 && data[0].error_type) {
-          resultDiv.className="error-box";
-          let html=`<b>${t.errorHeader}</b><br><br>`;
-          data.forEach((err,i)=>{
-            const explanation=typeof err.explanation==="object"?JSON.stringify(err.explanation):err.explanation;
-            const solution=typeof err.solution==="object"?JSON.stringify(err.solution):err.solution;
-            html+=`<b>${t.errorLabel} ${i+1}:</b><br>${t.errorTypeLabel} ${err.error_type}<br>${t.explanationLabel} ${explanation}<br>${t.lineLabel} ${err.line}<br>${t.originalMsgLabel} <code>${err.original_message}</code><br><b>Çözüm:</b> ${solution}<br><br>`;
-            const lineNumber=parseInt(err.line,10)-1;
-            if(!isNaN(lineNumber)&&lineNumber>=0){editor.markText({line:lineNumber,ch:0},{line:lineNumber,ch:editor.getLine(lineNumber).length},{className:"error-line"});}
+        if (Array.isArray(data) && data.length > 0 && data[0].error_type) {
+          resultDiv.className = "error-box";
+          let html = `<b>${t.errorHeader}</b><br><br>`;
+          data.forEach((err, i) => {
+            const explanation = typeof err.explanation === "object" ? JSON.stringify(err.explanation) : err.explanation;
+            const solution = typeof err.solution === "object" ? JSON.stringify(err.solution) : err.solution;
+
+            html += `<b>${t.errorLabel} ${i + 1}:</b><br>
+                     ${t.errorTypeLabel} ${err.error_type}<br>
+                     ${t.explanationLabel} ${explanation}<br>
+                     ${t.lineLabel} ${err.line}<br>
+                     ${t.originalMsgLabel} <code>${err.original_message}</code><br>
+                     <b>Çözüm:</b> ${solution}<br><br>`;
+
+            const lineNumber = parseInt(err.line, 10) - 1;
+            if (!isNaN(lineNumber) && lineNumber >= 0) {
+              editor.markText(
+                { line: lineNumber, ch: 0 },
+                { line: lineNumber, ch: editor.getLine(lineNumber).length },
+                { className: "error-line" }
+              );
+            }
           });
-          resultDiv.innerHTML=html;
-        } else if(data.error_type) {
-          resultDiv.className="error-box";
-          resultDiv.innerHTML=`${t.errorTypeLabel} ${data.error_type}<br>${t.explanationLabel} ${data.explanation}<br>${t.lineLabel} ${data.line}<br>${t.originalMsgLabel} <code>${data.original_message}</code>`;
+          resultDiv.innerHTML = html;
+        } else if (data.error_type) {
+          resultDiv.className = "error-box";
+          resultDiv.innerHTML = `
+            ${t.errorTypeLabel} ${data.error_type}<br>
+            ${t.explanationLabel} ${data.explanation}<br>
+            ${t.lineLabel} ${data.line}<br>
+            ${t.originalMsgLabel} <code>${data.original_message}</code>
+          `;
         } else {
-          resultDiv.className="success-box";
-          resultDiv.innerHTML=`<b>${t.noError}</b>`;
+          resultDiv.className = "success-box";
+          resultDiv.innerHTML = `<b>${t.noError}</b>`;
         }
-      } catch(error) {
-        resultDiv.className="error-box";
-        resultDiv.textContent=t.apiError;
+      } catch (error) {
+        resultDiv.className = "error-box";
+        resultDiv.textContent = t.apiError;
       }
     }
 
     function clearCode() {
       editor.setValue("");
       resultDivEl.textContent = translations[langSelect.value].result_Placeholder;
-      resultDivEl.className="";
-      editor.getAllMarks().forEach(mark=>mark.clear());
+      resultDivEl.className = "";
+      editor.getAllMarks().forEach(mark => mark.clear());
     }
 
     async function pasteCode() {
-      try { const text = await navigator.clipboard.readText(); editor.setValue(text); } 
-      catch(err){ alert("Panoya erişim reddedildi! Tarayıcı izin vermiyor olabilir."); console.error("Clipboard error:",err); }
+      try {
+        const text = await navigator.clipboard.readText();
+        editor.setValue(text);
+      } catch (err) {
+        alert("Panoya erişim reddedildi! Tarayıcı izin vermiyor olabilir.");
+        console.error("Clipboard error:", err);
+      }
     }
 
     function updateLanguageTexts() {
-      const lang=document.getElementById("lang").value;
-      const pasteBtn=document.getElementById("pasteBtn");
-      if(pasteBtn){ pasteBtn.textContent=lang==="tr"?"Yapıştır":"Paste"; }
+      const lang = document.getElementById("lang").value;
+      const pasteBtn = document.getElementById("pasteBtn");
+      if (pasteBtn) {
+        pasteBtn.textContent = lang === "tr" ? "Yapıştır" : "Paste";
+      }
     }
 
-    window.onload=function(){ updateLanguageTexts(); setLanguage(currentLang); }
-    document.getElementById("lang").addEventListener("change",updateLanguageTexts);
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark-mode");
+    }
+
+    window.onload = function() {
+      updateLanguageTexts();
+      setLanguage(currentLang);
+    }
+
+    document.getElementById("lang").addEventListener("change", updateLanguageTexts);
   </script>
 </body>
 </html>
