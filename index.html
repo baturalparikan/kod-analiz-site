@@ -19,6 +19,27 @@
       background-color: #f9f9f9;
     }
 
+    .language-switch {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.language-switch img {
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.3s;
+}
+
+.language-switch img.active {
+  opacity: 1;
+}
+
+
     .logo {
       font-family: "Times New Roman", serif;
       font-size: 24px;
@@ -90,6 +111,11 @@
   <div class="logo">
   PyInspect
 </div>
+<div class="language-switch">
+  <img id="pythonBtn" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="Python" onclick="setLanguage('Python')" class="active">
+  <img id="javaBtn" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg" alt="Java" onclick="setLanguage('Java')">
+</div>
+
 
   <div class="container">
     <h2 id="title">Kod Analiz Aracı</h2>
@@ -202,7 +228,11 @@
         const response = await fetch(API_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ code: code, lang: lang })
+          body: JSON.stringify({ 
+  code: code, 
+  lang: lang,               // Arayüz dili (Türkçe / İngilizce vs.)
+  programming_language: currentLang  // Seçilen programlama dili (Python / Java)
+})
         });
         const data = await response.json();
 
@@ -275,6 +305,37 @@ function updateLanguageTexts() {
     if (pasteBtn) {
         pasteBtn.textContent = lang === "tr" ? "Yapıştır" : "Paste";
     }
+}
+let currentLang = "Python";
+
+function setLanguage(lang) {
+  currentLang = lang;
+
+  // Editörün sağ üstünde hangi dil seçili yazsın
+  const editorContainer = document.querySelector(".CodeMirror");
+  let langLabel = document.getElementById("selected-lang");
+  if (!langLabel) {
+    langLabel = document.createElement("div");
+    langLabel.id = "selected-lang";
+    langLabel.style.position = "absolute";
+    langLabel.style.top = "10px";
+    langLabel.style.right = "10px";
+    langLabel.style.background = "#007bff";
+    langLabel.style.color = "white";
+    langLabel.style.padding = "2px 8px";
+    langLabel.style.borderRadius = "5px";
+    editorContainer.appendChild(langLabel);
+  }
+  langLabel.textContent = lang;
+
+  // Buton aktifliğini ayarla
+  document.getElementById("pythonBtn").classList.remove("active");
+  document.getElementById("javaBtn").classList.remove("active");
+  if (lang === "Python") {
+    document.getElementById("pythonBtn").classList.add("active");
+  } else if (lang === "Java") {
+    document.getElementById("javaBtn").classList.add("active");
+  }
 }
 
 // Sayfa açıldığında çalışsın
