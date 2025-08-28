@@ -19,6 +19,8 @@
       --success-bg: #e6ffe6;
       --success-border: #009900;
       --success-text: #003300;
+      --editor-bg: white;
+      --editor-text: black;
     }
 
     body {
@@ -45,6 +47,8 @@
       --success-bg: #00660033;
       --success-border: #00ff00;
       --success-text: #aaffaa;
+      --editor-bg: #1e1e1e;
+      --editor-text: #f1f1f1;
     }
 
     .error-line {
@@ -84,7 +88,7 @@
 
     #darkModeSwitch {
       position: absolute;
-      top: 60px; /* logo altına yerleştirildi */
+      top: 60px;
       left: 20px;
       padding: 8px 12px;
       border-radius: 5px;
@@ -108,13 +112,6 @@
     h2 {
       text-align: center;
       margin-bottom: 15px;
-    }
-
-    #editor {
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      height: 200px;
-      width: 100%;
     }
 
     select, button {
@@ -160,6 +157,8 @@
       width: 100%;
       min-width: 600px;
       transition: all 0.3s ease;
+      background-color: var(--editor-bg);
+      color: var(--editor-text);
     }
   </style>
 </head>
@@ -220,6 +219,10 @@
     function updateDarkModeText() {
       const lang = document.getElementById("lang").value;
       darkModeSwitch.textContent = darkMode ? darkModeTexts[lang].light : darkModeTexts[lang].dark;
+      // KodMirror teması için
+      editor.getWrapperElement().style.backgroundColor = darkMode ? "#1e1e1e" : "white";
+      editor.getWrapperElement().style.color = darkMode ? "#f1f1f1" : "black";
+      editor.refresh();
     }
 
     function toggleDarkMode() {
@@ -255,7 +258,7 @@
         document.getElementById("javaBtn").classList.add("active");
         editor.setOption("mode", "text/x-java");
       }
-      updateDarkModeText(); // dil değiştiğinde buton yazısını da güncelle
+      updateDarkModeText();
     }
 
     const editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
@@ -265,13 +268,13 @@
     });
 
     const translations = {
-      en: { title:"Code Analysis Tool", labelLang:"Language:", analyze:"Analyze", clear:"Clear", result_Placeholder:"Result will appear here...", analyzing:"Analyzing...", apiError:"Error: Can't reach API.", noError:"No errors found in code.", errorHeader:"Errors found:", errorLabel:"Error", errorTypeLabel:"Error Type:", explanationLabel:"Explanation:", lineLabel:"Line:", originalMsgLabel:"Original Message:", description:"Paste your Python code below and click Analyze to find errors."},
-      tr: { title:"Kod Analiz Aracı", labelLang:"Dil Seç:", analyze:"Analiz Et", clear:"Temizle", result_Placeholder:"Sonuç burada görünecek...", analyzing:"Analiz ediliyor...", apiError:"Hata: API'ye ulaşılamıyor.", noError:"Kodda hata bulunamadı.", errorHeader:"Bulunan Hatalar:", errorLabel:"Hata", errorTypeLabel:"Hata Türü:", explanationLabel:"Açıklama:", lineLabel:"Satır:", originalMsgLabel:"Orijinal Mesaj:", description:"Python kodunuzu aşağıya yapıştırın ve Analiz Et'e tıklayın."},
-      de: { title:"Code Analyse Werkzeug", labelLang:"Sprache:", analyze:"Analysieren", clear:"Löschen", result_Placeholder:"Ergebnis erscheint hier...", analyzing:"Analysiere...", apiError:"Fehler: API nicht erreichbar.", noError:"Keine Fehler im Code gefunden.", errorHeader:"Gefundene Fehler:", errorLabel:"Fehler", errorTypeLabel:"Fehlerart:", explanationLabel:"Erklärung:", lineLabel:"Zeile:", originalMsgLabel:"Originalnachricht:", description:"Fügen Sie Ihren Python-Code unten ein und klicken Sie auf Analysieren."},
-      ru: { title:"Инструмент анализа кода", labelLang:"Язык:", analyze:"Анализировать", clear:"Очистить", result_Placeholder:"Результат появится здесь...", analyzing:"Анализ...", apiError:"Ошибка: API недоступно.", noError:"Ошибок не найдено.", errorHeader:"Найденные ошибки:", errorLabel:"Ошибка", errorTypeLabel:"Тип ошибки:", explanationLabel:"Объяснение:", lineLabel:"Строка:", originalMsgLabel:"Оригинальное сообщение:", description:"Вставьте ваш Python-код ниже и нажмите Анализировать."},
-      ar: { title:"أداة تحليل الكود", labelLang:"اللغة:", analyze:"تحليل", clear:"مسح", result_Placeholder:"ستظهر النتيجة هنا...", analyzing:"جارٍ التحليل...", apiError:"خطأ: لا يمكن الوصول إلى API.", noError:"لم يتم العثور على أي أخطاء في الكود.", errorHeader:"الأخطاء الموجودة:", errorLabel:"خطأ", errorTypeLabel:"نوع الخطأ:", explanationLabel:"الشرح:", lineLabel:"السطر:", originalMsgLabel:"الرسالة الأصلية:", description:"ألصق كود Python أدناه وانقر على تحليل للعثور على الأخطاء."},
-      zh: { title:"代码分析工具", labelLang:"语言:", analyze:"分析", clear:"清除", result_Placeholder:"结果将在此显示...", analyzing:"分析中...", apiError:"错误：无法访问API。", noError:"代码中未发现错误。", errorHeader:"发现的错误:", errorLabel:"错误", errorTypeLabel:"错误类型:", explanationLabel:"说明:", lineLabel:"行:", originalMsgLabel:"原始消息:", description:"将您的Python代码粘贴到下面，然后点击分析以查找错误。"},
-      es: { title:"Herramienta de Análisis de Código", labelLang:"Idioma:", analyze:"Analizar", clear:"Borrar", result_Placeholder:"El resultado aparecerá aquí...", analyzing:"Analizando...", apiError:"Error: No se puede acceder a la API.", noError:"No se encontraron errores en el código.", errorHeader:"Errores encontrados:", errorLabel:"Error", errorTypeLabel:"Tipo de error:", explanationLabel:"Explicación:", lineLabel:"Línea:", originalMsgLabel:"Mensaje original:", description:"Pegue su código Python a continuación y haga clic en Analizar para encontrar errores."}
+      en: { title:"Code Analysis Tool", labelLang:"Language:", analyze:"Analyze", clear:"Clear", paste:"Paste", result_Placeholder:"Result will appear here...", analyzing:"Analyzing...", apiError:"Error: Can't reach API.", noError:"No errors found in code.", errorHeader:"Errors found:", lineLabel:"Line:", description:"Paste your Python code below and click Analyze to find errors."},
+      tr: { title:"Kod Analiz Aracı", labelLang:"Dil Seç:", analyze:"Analiz Et", clear:"Temizle", paste:"Yapıştır", result_Placeholder:"Sonuç burada görünecek...", analyzing:"Analiz ediliyor...", apiError:"Hata: API'ye ulaşılamıyor.", noError:"Kodda hata bulunamadı.", errorHeader:"Bulunan Hatalar:", lineLabel:"Satır:", description:"Python kodunuzu aşağıya yapıştırın ve Analiz Et'e tıklayın."},
+      de: { title:"Code Analyse Werkzeug", labelLang:"Sprache:", analyze:"Analysieren", clear:"Löschen", paste:"Einfügen", result_Placeholder:"Ergebnis erscheint hier...", analyzing:"Analysiere...", apiError:"Fehler: API nicht erreichbar.", noError:"Keine Fehler im Code gefunden.", errorHeader:"Gefundene Fehler:", lineLabel:"Zeile:", description:"Fügen Sie Ihren Python-Code unten ein und klicken Sie auf Analysieren."},
+      ru: { title:"Инструмент анализа кода", labelLang:"Язык:", analyze:"Анализировать", clear:"Очистить", paste:"Вставить", result_Placeholder:"Результат появится здесь...", analyzing:"Анализ...", apiError:"Ошибка: API недоступно.", noError:"Ошибок не найдено.", errorHeader:"Найденные ошибки:", lineLabel:"Строка:", description:"Вставьте ваш Python-код ниже и нажмите Анализировать."},
+      ar: { title:"أداة تحليل الكود", labelLang:"اللغة:", analyze:"تحليل", clear:"مسح", paste:"لصق", result_Placeholder:"ستظهر النتيجة هنا...", analyzing:"جارٍ التحليل...", apiError:"خطأ: لا يمكن الوصول إلى API.", noError:"لم يتم العثور على أي أخطاء في الكود.", errorHeader:"الأخطاء الموجودة:", lineLabel:"السطر:", description:"ألصق كود Python أدناه وانقر على تحليل للعثور على الأخطاء."},
+      zh: { title:"代码分析工具", labelLang:"语言:", analyze:"分析", clear:"清除", paste:"粘贴", result_Placeholder:"结果将在此显示...", analyzing:"分析中...", apiError:"错误：无法访问API。", noError:"代码中未发现错误。", errorHeader:"发现的错误:", lineLabel:"行:", description:"将您的Python代码粘贴到下面，然后点击分析以查找错误。"},
+      es: { title:"Herramienta de Análisis de Código", labelLang:"Idioma:", analyze:"Analizar", clear:"Borrar", paste:"Pegar", result_Placeholder:"El resultado aparecerá aquí...", analyzing:"Analizando...", apiError:"Error: No se puede acceder a la API.", noError:"No se encontraron errores en el código.", errorHeader:"Errores encontrados:", lineLabel:"Línea:", description:"Pegue su código Python a continuación y haga clic en Analizar para encontrar errores."}
     };
 
     const langSelect = document.getElementById("lang");
@@ -280,16 +283,18 @@
     const labelEl = document.querySelector('label[for="lang"]');
     const analyzeBtnEl = document.getElementById("analyzeBtn");
     const clearBtnEl = document.getElementById("clearBtn");
+    const pasteBtnEl = document.getElementById("pasteBtn");
     const resultDivEl = document.getElementById("result");
 
     function applyLanguage(lang) {
       const t = translations[lang] || translations["en"];
-      if(titleEl) titleEl.textContent = t.title;
-      if(descriptionEl) descriptionEl.textContent = t.description;
-      if(labelEl) labelEl.textContent = t.labelLang;
-      if(analyzeBtnEl) analyzeBtnEl.textContent = t.analyze;
-      if(clearBtnEl) clearBtnEl.textContent = t.clear;
-      if(resultDivEl) resultDivEl.textContent = t.result_Placeholder;
+      titleEl.textContent = t.title;
+      descriptionEl.textContent = t.description;
+      labelEl.textContent = t.labelLang;
+      analyzeBtnEl.textContent = t.analyze;
+      clearBtnEl.textContent = t.clear;
+      pasteBtnEl.textContent = t.paste;
+      resultDivEl.textContent = t.result_Placeholder;
       updateDarkModeText();
       document.documentElement.lang = lang;
     }
@@ -300,9 +305,65 @@
     langSelect.value = DEFAULT_LANG;
     applyLanguage(DEFAULT_LANG);
 
-    // Burada analyzeCode, clearCode, pasteCode fonksiyonları aynen kalabilir
-    // ...
+    // Kod analizi ve diğer buton fonksiyonları
+    async function analyzeCode() {
+      const lang = document.getElementById("lang").value;
+      const t = translations[lang] || translations["en"];
+      const code = editor.getValue();
 
+      if (!code.trim()) {
+        resultDivEl.textContent = t.noError;
+        resultDivEl.className = "success-box";
+        return;
+      }
+
+      resultDivEl.textContent = t.analyzing;
+      resultDivEl.className = "";
+
+      try {
+        let errors = [];
+        const lines = code.split("\n");
+        lines.forEach((line, index) => {
+          if (/error/i.test(line)) {
+            errors.push({line: index + 1, msg: "Örnek hata bulundu: 'error' kelimesi"});
+          }
+        });
+
+        if (errors.length === 0) {
+          resultDivEl.textContent = t.noError;
+          resultDivEl.className = "success-box";
+        } else {
+          let html = `<strong>${t.errorHeader}</strong><br>`;
+          errors.forEach(err => {
+            html += `${t.lineLabel} ${err.line}: ${err.msg}<br>`;
+          });
+          resultDivEl.innerHTML = html;
+          resultDivEl.className = "error-box";
+        }
+      } catch (e) {
+        console.error(e);
+        resultDivEl.textContent = t.apiError;
+        resultDivEl.className = "error-box";
+      }
+    }
+
+    function clearCode() {
+      editor.setValue("");
+      const lang = document.getElementById("lang").value;
+      const t = translations[lang] || translations["en"];
+      resultDivEl.textContent = t.result_Placeholder;
+      resultDivEl.className = "";
+    }
+
+    async function pasteCode() {
+      try {
+        const text = await navigator.clipboard.readText();
+        editor.setValue(text);
+      } catch (err) {
+        alert("Panoya erişim reddedildi!");
+        console.error(err);
+      }
+    }
   </script>
 </body>
 </html>
