@@ -296,7 +296,7 @@
         const response = await fetch(API_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ code: code, lang: lang, programming_language: currentLang })
+          body: JSON.stringify({ code: code, lang: lang, programming_language: currentLang === "Java" ? "java" : "python" })
         });
         const data = await response.json();
 
